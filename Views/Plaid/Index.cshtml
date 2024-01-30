@@ -1,0 +1,63 @@
+﻿@model Main_Plaid.Models.ResponceAccessToken
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plaid.com/link/stable/link-initialize.js"></script>
+    <title>Plaid Integration</title>
+</head>
+<body>
+
+    <h1>Plaid Access Token</h1>
+
+    @if (Model != null)
+    {
+        <p><strong>Access Token:</strong> @Model.access_token</p>
+        <p><strong>Public Key:</strong> @Model.PublicKey</p>
+        <p><strong>Additional Data:</strong> @ViewBag.AdditionalData</p>
+        <p><strong>Token from ViewBag:</strong> @ViewBag.Token</p>
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+@*                 // Fetch Plaid API credentials from the server-side configuration
+ *@                
+                const client_id = '@Model.client_id';
+                const dynamicPublicKey = '@Model.PublicKey';
+                const environment = 'sandbox';
+
+@*                 // Initialize Plaid Link
+ *@               
+                    const handler = Plaid.create({
+                    clientName: 'RONNY', // Replace with an appropriate client name
+                    key: dynamicPublicKey,
+                    env: environment,
+                    product: ['auth'],
+                    onSuccess: function (public_token, metadata) {
+                        console.log('Public Token:', public_token);
+                        console.log('Metadata:', metadata);
+                    },
+                    onExit: function (err, metadata) {
+                        console.log('Exit Event:', err, metadata);
+                    }
+                });
+
+@*                 // Trigger Plaid Link when a button is clicked
+ *@                
+                    document.getElementById('plaid-link-button').onclick = function () {
+                    handler.open();
+                };
+            });
+        </script>
+    }
+    else
+    {
+        <p>Access Token not available</p>
+    }
+
+    <button id="plaid-link-button">Open Plaid Link</button>
+
+</body>
+</html>
